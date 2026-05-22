@@ -7,10 +7,8 @@ Mini callback public pentru OAuth ANAF. Se publica pe GitHub Pages si nu contine
 Dupa publicarea cu GitHub Pages, foloseste in portalul ANAF URL-ul:
 
 ```text
-https://<user>.github.io/anaf-oauth-callback/
+https://cosmin-vestemean.github.io/anaf-oauth-callback/
 ```
-
-Inlocuieste `<user>` cu utilizatorul sau organizatia GitHub.
 
 ## Flux
 
