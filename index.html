@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ANAF OAuth Callback</title>
+    <style>
+      :root {
+        color: #1f2a2e;
+        background: #f4f1ea;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background:
+          linear-gradient(135deg, rgba(17, 124, 111, 0.14), transparent 34%),
+          radial-gradient(circle at 82% 12%, rgba(179, 107, 18, 0.16), transparent 28%),
+          #f4f1ea;
+      }
+
+      main {
+        width: min(720px, calc(100% - 32px));
+        padding: 28px;
+        border: 1px solid #d7d0c4;
+        border-radius: 8px;
+        background: #fffdf7;
+        box-shadow: 0 18px 50px rgba(58, 46, 32, 0.14);
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(2rem, 6vw, 4rem);
+        line-height: 0.95;
+      }
+
+      p {
+        color: #667274;
+        font-family: "Trebuchet MS", Verdana, sans-serif;
+        line-height: 1.5;
+      }
+
+      code,
+      textarea {
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 12px;
+        border: 1px solid #d7d0c4;
+        border-radius: 8px;
+        resize: vertical;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      button,
+      a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 42px;
+        padding: 0 14px;
+        border: 1px solid #117c6f;
+        border-radius: 8px;
+        color: white;
+        background: #117c6f;
+        font-family: "Trebuchet MS", Verdana, sans-serif;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .secondary {
+        color: #117c6f;
+        background: white;
+      }
+
+      .error {
+        color: #a43e35;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>ANAF OAuth</h1>
+      <p id="message">Se citeste raspunsul OAuth...</p>
+      <textarea id="code" readonly></textarea>
+      <div class="actions">
+        <button id="copy" type="button">Copiaza codul</button>
+        <a id="local" class="secondary" href="http://127.0.0.1:5173/">Deschide ANAF Local</a>
+      </div>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code') || '';
+      const error = params.get('error') || '';
+      const state = params.get('state') || '';
+      const codeField = document.querySelector('#code');
+      const message = document.querySelector('#message');
+      const copy = document.querySelector('#copy');
+      const local = document.querySelector('#local');
+
+      if (error) {
+        message.className = 'error';
+        message.textContent = `ANAF a returnat o eroare: ${error}`;
+        codeField.value = params.toString();
+      } else if (code) {
+        message.textContent = 'Cod OAuth primit. Copiaza-l in aplicatia locala pentru schimbul in token.';
+        codeField.value = code;
+        const localUrl = new URL('http://127.0.0.1:5173/');
+        localUrl.searchParams.set('oauth_code', code);
+        if (state) {
+          localUrl.searchParams.set('state', state);
+        }
+        local.href = localUrl.toString();
+      } else {
+        message.textContent = 'Nu exista code in URL. Porneste autentificarea din aplicatia ANAF Local.';
+      }
+
+      copy.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(codeField.value);
+        copy.textContent = 'Copiat';
+      });
+    </script>
+  </body>
+</html>
